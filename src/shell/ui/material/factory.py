@@ -1,7 +1,7 @@
-from src.shell.components.folder.Folder import FolderWidget
-from src.shell.components.folder.managers.ExpandedViewManager import ExpandedViewManager
-from src.shell.components.folder.managers.FloatingIconManager import FloatingIconManager
-from src.shell.components.folder.managers.OverlayManager import OverlayManager
+from .folder_widget import FolderWidget
+from .managers.expanded_view_manager import ExpandedViewManager
+from .managers.floating_icon_manager import FloatingIconManager
+from .managers.overlay_manager import OverlayManager
 
 
 class MaterialUIFactory:

@@ -6,7 +6,7 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QGridLayout, QSizePolicy,
 from typing import Callable
 
 # CHANGE: Import only FolderController - FolderWidget comes from UIFactory
-from src.shell.components.folder.Folder import FolderController
+from src.shell.folder_controller import FolderController
 
 @dataclass
 class FolderConfig:

@@ -34,7 +34,7 @@ class AppShell(QWidget):
         self._app_descriptors = app_descriptors
         self._widget_factory = widget_factory
 
-        from src.shell.components.material_factory import MaterialUIFactory
+        from src.shell.ui.material import MaterialUIFactory
         self._ui_factory = ui_factory or MaterialUIFactory()
 
         # Internal state

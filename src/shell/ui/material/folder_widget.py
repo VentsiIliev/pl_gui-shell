@@ -1,26 +1,11 @@
-# ========================================
-# FIXED: FolderController - Make it a QObject to use signals properly
-# ========================================
-
-from dataclasses import dataclass
-from typing import Optional
-from PyQt6.QtCore import Qt, pyqtSignal, QTimer, QSize, QObject
+from PyQt6.QtCore import Qt, pyqtSignal, QTimer, QSize
 from PyQt6.QtGui import QPixmap, QFont, QColor
 from PyQt6.QtWidgets import (
-    QFrame, QLabel, QGridLayout,QVBoxLayout,
+    QFrame, QLabel, QGridLayout, QVBoxLayout,
     QGraphicsDropShadowEffect, QSizePolicy
 )
 
-from .MenuIcon import MenuIcon
-
-
-@dataclass
-class FolderState:
-    """Simple folder state data"""
-    is_open: bool = False
-    is_grayed_out: bool = False
-    app_running: bool = False
-    current_app_name: Optional[str] = None
+from .menu_icon import MenuIcon
 
 
 class LayoutManager:
@@ -93,17 +78,13 @@ class LayoutManager:
         self._resize_timer.start(150)
 
 
-# ========================================
-# Pure UI Component - Folder Widget (unchanged)
-# ========================================
-
 class FolderWidget(QFrame):
     """Pure UI component - only handles visual presentation"""
 
     clicked = pyqtSignal()
     outside_clicked = pyqtSignal()
 
-    def __init__(self, ID,folder_name="Apps", parent=None):
+    def __init__(self, ID, folder_name="Apps", parent=None):
         super().__init__(parent)
         self.ID = ID
         self.folder_name = folder_name
@@ -112,10 +93,9 @@ class FolderWidget(QFrame):
         self.layout_manager = LayoutManager(self)
         self.setup_ui()
         self.setAcceptDrops(True)
-        self.translate_fn= None
+        self.translate_fn = None
 
-
-    def update_title_label(self,message=None):
+    def update_title_label(self, message=None):
         if self.translate_fn:
             title = self.translate_fn(self.folder_name)
         else:
@@ -233,7 +213,7 @@ class FolderWidget(QFrame):
                 mini_shadow.setColor(QColor(103, 80, 164, 40))
                 mini_shadow.setOffset(0, 2)
                 mini_icon.setGraphicsEffect(mini_shadow)
-            except:
+            except Exception:
                 pass
 
             icon_loaded = False
@@ -251,7 +231,7 @@ class FolderWidget(QFrame):
                 pass
 
             if not icon_loaded:
-                mini_icon.setText("📱")
+                mini_icon.setText("\U0001f4f1")
                 placeholder_font_size = max(20, int(icon_size * 0.35))
                 mini_icon.setStyleSheet(mini_icon.styleSheet() + f"font-size: {placeholder_font_size}px;")
 
@@ -345,235 +325,3 @@ class FolderWidget(QFrame):
     def resizeEvent(self, event):
         super().resizeEvent(event)
         self.layout_manager.handle_resize_event()
-
-
-# ========================================
-# FIXED: Controller/Coordinator - Now inherits from QObject
-# ========================================
-
-class FolderController(QObject):
-    """Handles all folder business logic and orchestration - NOW A QOBJECT"""
-
-    # Now these signals will work properly
-    folder_opened = pyqtSignal()
-    folder_closed = pyqtSignal()
-    app_selected = pyqtSignal(str)
-    close_current_app_signal = pyqtSignal()
-
-    def __init__(self, folder_widget: FolderWidget, main_window=None, ui_factory=None, parent=None):
-        super().__init__(parent)  # Initialize QObject
-        self.folder_widget = folder_widget
-        self.main_window = main_window
-
-        # Business state
-        self.state = FolderState()
-
-        # Managers for complex operations - created via injected factory
-        self.floating_icon_manager = ui_factory.create_floating_icon_manager(folder_widget)
-        self.overlay_manager = ui_factory.create_overlay_manager(
-            folder_widget, overlay_parent=self.main_window, overlay_callback=self.handle_outside_click
-        )
-        self.expanded_view_manager = ui_factory.create_expanded_view_manager(folder_widget)
-
-        # Connect to UI events
-        self.folder_widget.clicked.connect(self.handle_folder_click)
-
-    def set_main_window(self, main_window):
-        """Set main window reference"""
-        self.main_window = main_window
-
-    def handle_folder_click(self):
-        """Handle folder click - business logic"""
-        # print(
-        #     f"FolderController: Folder clicked. Current state: open={self.state.is_open}, grayed_out={self.state.is_grayed_out}, app_running={self.state.app_running}")
-
-        if self.state.is_grayed_out or self.state.app_running:
-            # print("FolderController: Folder click ignored - grayed out or app running")
-            return
-
-        self.state.is_open = not self.state.is_open
-        if self.state.is_open:
-            try:
-                self.open_folder()
-            except Exception as e:
-                import traceback
-                traceback.print_exc()
-                # print(f"FolderController: Exception during folder open: {e}")
-                self.state.is_open = False
-        else:
-            self.close_folder()
-
-    def open_folder(self):
-        """Business logic for opening folder"""
-        # print("FolderController: Opening folder")
-        if not self.main_window:
-            # print("FolderController: ERROR - main_window is not set. Cannot open folder.")
-            self.state.is_open = False
-            return
-
-        # CRITICAL FIX: Pass the correct callback
-        overlay = self.overlay_manager.show_overlay()
-        if not overlay:
-            # print("FolderController: Failed to create overlay")
-            self.state.is_open = False
-            return
-
-        # print("FolderController: Overlay created successfully")
-
-        expanded_view = self.expanded_view_manager.show_expanded_view(
-            self.folder_widget.folder_name,
-            overlay,
-            self.close_folder,
-            self.handle_app_selected,
-            self.minimize_to_floating_icon,
-            self.handle_close_app
-        )
-        # print("FolderController: Expanded view created successfully")
-        self.expanded_view_manager.populate_apps(self.folder_widget.buttons)
-
-        screen_center = self.main_window.rect().center()
-        self.expanded_view_manager.fade_in(screen_center)
-
-        # Now this will work since we inherit from QObject
-        self.folder_opened.emit()
-        # print("FolderController: Folder opened successfully")
-
-    def handle_outside_click(self):
-        """Handle clicking outside folder - CRITICAL METHOD"""
-        # print("FolderController: Outside click detected!")
-        # print(f"FolderController: Current app: {self.state.current_app_name}")
-
-        if self.state.current_app_name:
-            # print("FolderController: App running - minimizing to floating icon")
-            self.minimize_to_floating_icon()
-        else:
-            # print("FolderController: No app running - closing folder")
-            self.close_folder()
-
-    def minimize_to_floating_icon(self):
-        """Business logic for minimizing to floating icon"""
-        # print("FolderController: Minimizing to floating icon")
-        self.overlay_manager.hide_overlay()
-        self.expanded_view_manager.fade_out()
-        self.overlay_manager.set_style("background-color: rgba(0, 0, 0, 0.05);")
-        self.floating_icon_manager.show_floating_icon(
-            self.folder_widget.folder_name,
-            self.restore_from_floating_icon
-        )
-
-    def restore_from_floating_icon(self):
-        """Business logic for restoring from floating icon"""
-        # print("FolderController: Restoring from floating icon")
-        self.overlay_manager.show_overlay()
-        self.floating_icon_manager.hide_floating_icon()
-        self.overlay_manager.set_style("background-color: rgba(0, 0, 0, 0.32);")
-
-        if self.main_window:
-            center = self.main_window.rect().center()
-            self.expanded_view_manager.fade_in(center)
-
-            if self.state.current_app_name:
-                self.expanded_view_manager.show_close_button()
-
-    def close_folder(self):
-        """Business logic for closing folder"""
-        # print("FolderController: Closing folder")
-
-        if not self.state.current_app_name:
-            self.state.app_running = False
-
-        self.expanded_view_manager.fade_out()
-        self.overlay_manager.hide_overlay()
-        self.floating_icon_manager.hide_floating_icon()
-
-        self.state.is_open = False
-        self.state.current_app_name = None
-
-        # Now this will work since we inherit from QObject
-        self.folder_closed.emit()
-        # print("FolderController: Folder closed successfully")
-
-
-    def handle_app_selected(self, app_name):
-        """Business logic for app selection"""
-        # print(f"FolderController: App selected - {app_name}")
-        self.state.app_running = True
-        self.state.current_app_name = app_name
-
-        # Now this will work since we inherit from QObject
-        self.app_selected.emit(app_name)
-
-        self.expanded_view_manager.show_close_button()
-        self.overlay_manager.set_style("background-color: rgba(0, 0, 0, 0.16);")
-        self.overlay_manager.hide_overlay()
-        QTimer.singleShot(300, self.minimize_to_floating_icon)
-
-    def handle_close_app(self):
-        """Business logic for closing app"""
-        # print("FolderController: Closing app")
-        self.state.app_running = False
-        self.state.current_app_name = None
-        self.expanded_view_manager.hide_close_button()
-        self.close_current_app_signal.emit()
-        self.close_folder()
-
-    def set_disabled(self, disabled):
-        """Update business and UI state"""
-        self.state.is_grayed_out = disabled
-        self.folder_widget.set_grayed_out(disabled)
-        self.folder_widget.setVisible(not disabled)
-
-# ========================================
-# Usage Example - Updated
-# ========================================
-
-if __name__ == "__main__":
-    import sys
-    from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout
-
-    app = QApplication(sys.argv)
-
-    main_window = QWidget()
-    main_window.setWindowTitle("FIXED MVC Folder Interface")
-    main_window.resize(1000, 800)
-    main_window.setStyleSheet("""
-        QWidget {
-            background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-                stop:0 #FFFBFE,
-                stop:1 #F7F2FA);
-            font-family: 'Roboto', 'Segoe UI', sans-serif;
-        }
-    """)
-
-    # Create UI component
-    folder_widget = FolderWidget("Fixed Apps")
-    folder_widget.add_app("Visual Studio Code", "📱")
-    folder_widget.add_app("Adobe Creative Suite", "🎨")
-    folder_widget.add_app("Microsoft Office", "📊")
-    folder_widget.add_app("Development Tools", "⚙️")
-
-    # Create controller for business logic - NOW WORKS WITH SIGNALS
-    from src.shell.components.material_factory import MaterialUIFactory
-    folder_controller = FolderController(folder_widget, main_window, ui_factory=MaterialUIFactory())
-
-    # Test the signals
-    folder_controller.folder_opened.connect(lambda: print("SIGNAL: Folder opened!"))
-    folder_controller.folder_closed.connect(lambda: print("SIGNAL: Folder closed!"))
-    folder_controller.app_selected.connect(lambda app: print(f"SIGNAL: App selected - {app}"))
-
-    # Layout
-    layout = QVBoxLayout(main_window)
-    layout.setContentsMargins(48, 48, 48, 48)
-    layout.setSpacing(24)
-    layout.addStretch(1)
-
-    h_layout = QHBoxLayout()
-    h_layout.addStretch(1)
-    h_layout.addWidget(folder_widget)
-    h_layout.addStretch(1)
-
-    layout.addLayout(h_layout)
-    layout.addStretch(1)
-
-    main_window.show()
-    sys.exit(app.exec())

@@ -1,4 +1,4 @@
-from ..MenuIcon import MenuIcon
+from ..menu_icon import MenuIcon
 
 
 class ExpandedViewManager:
@@ -11,8 +11,7 @@ class ExpandedViewManager:
     def show_expanded_view(self, folder_name, overlay_parent, on_close, on_app_selected, on_minimize, on_close_app):
         if self.expanded_view:
             self._cleanup()
-        # print(f"ExpandedViewManager: Creating expanded view for folder '{folder_name}' with overlay parent '{overlay_parent}'")
-        from ..ExpandedFolderView import ExpandedFolderView
+        from ..expanded_view import ExpandedFolderView
         self.expanded_view = ExpandedFolderView(folder_name, overlay_parent)
         self.expanded_view.close_requested.connect(on_close)
         self.expanded_view.app_selected.connect(on_app_selected)
@@ -48,19 +47,13 @@ class ExpandedViewManager:
             self.expanded_view.hide_close_app_button()
 
     def _cleanup(self):
-        # print("ExpandedViewManager: Cleaning up expanded view")
         if self.expanded_view:
-            # Disconnect signals to avoid accessing deleted objects
             try:
                 self.expanded_view.close_requested.disconnect()
                 self.expanded_view.app_selected.disconnect()
                 self.expanded_view.minimize_requested.disconnect()
                 self.expanded_view.close_current_app_requested.disconnect()
             except Exception:
-                import traceback
-                traceback.print_exc()
-            # print("ExpandedViewManager: Signals disconnected")
-            # self.expanded_view.deleteLater()
-            # print("ExpandedViewManager: Expanded view deleted")
+                pass
+            self.expanded_view.deleteLater()
             self.expanded_view = None
-            # print("ExpandedViewManager: Expanded view reference cleared")

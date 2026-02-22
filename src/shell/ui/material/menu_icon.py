@@ -1,12 +1,11 @@
 import os
-import sys
 
 from PyQt6.QtCore import Qt, pyqtSignal, QSize
 from PyQt6.QtGui import QFont, QColor, QIcon
-from PyQt6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout,
-                             QLabel, QGridLayout, QPushButton, QGraphicsDropShadowEffect)
+from PyQt6.QtWidgets import (QPushButton, QGraphicsDropShadowEffect)
 
-from .managers.AnimationManager import AnimationManager
+from .animation import AnimationManager
+
 
 class MenuIcon(QPushButton):
     """Material Design 3 app icon with proper touch targets and visual feedback"""
@@ -19,11 +18,11 @@ class MenuIcon(QPushButton):
         self.icon_path = icon_path
         self.icon_text = icon_text
         self.callback = callback
+        self._original_rect = None
 
         # Material Design touch target size (minimum 48dp)
         self.setFixedSize(112, 112)  # 112dp for comfortable touch interaction
         self.setup_ui()
-        # self.setup_animations()
         self.animation_manager = AnimationManager(self)
 
         # Connect callback if provided
@@ -65,7 +64,7 @@ class MenuIcon(QPushButton):
             shadow.setColor(QColor(103, 80, 164, 40))  # Primary color shadow
             shadow.setOffset(0, 2)
             self.setGraphicsEffect(shadow)
-        except:
+        except Exception:
             pass
 
         # Setup icon and text with Material Design principles
@@ -143,7 +142,7 @@ class MenuIcon(QPushButton):
             shadow.setColor(QColor(103, 80, 164, 60))  # Deeper shadow on hover
             shadow.setOffset(0, 4)
             self.setGraphicsEffect(shadow)
-        except:
+        except Exception:
             pass
 
     def leaveEvent(self, event):
@@ -157,7 +156,7 @@ class MenuIcon(QPushButton):
             shadow.setColor(QColor(103, 80, 164, 40))
             shadow.setOffset(0, 2)
             self.setGraphicsEffect(shadow)
-        except:
+        except Exception:
             pass
 
     def mousePressEvent(self, event):
@@ -177,9 +176,6 @@ class MenuIcon(QPushButton):
     def paintEvent(self, event):
         """Custom paint event for Material Design visual consistency"""
         super().paintEvent(event)
-
-        # Additional Material Design visual enhancements can be added here
-        # For now, we rely on stylesheet and shadow effects
 
     def sizeHint(self):
         """Material Design size hint"""
@@ -275,4 +271,3 @@ class MenuIcon(QPushButton):
             if hasattr(self, 'icon') and not self.icon().isNull():
                 icon_size = min(new_size.width(), new_size.height()) // 2
                 self.setIconSize(QSize(icon_size, icon_size))
-

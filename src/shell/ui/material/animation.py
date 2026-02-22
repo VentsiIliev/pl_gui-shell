@@ -509,7 +509,6 @@ def create_fab_animation(
     return manager
 
 
-# Example usage patterns for migration
 class AnimationPatterns:
     """Common animation patterns used in the folder interface"""
 
@@ -536,45 +535,3 @@ class AnimationPatterns:
         else:
             manager.create_floating_icon_hide_animation()
         return manager
-
-
-if __name__ == "__main__":
-    # Example usage for testing
-    from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout
-    import sys
-
-    app = QApplication(sys.argv)
-
-    window = QWidget()
-    window.setWindowTitle("Animation Manager Test")
-    window.resize(400, 300)
-
-    layout = QVBoxLayout(window)
-
-    test_widget = QWidget(window)
-    test_widget.setFixedSize(200, 150)
-    test_widget.setStyleSheet("background-color: #6750A4; border-radius: 12px;")
-    layout.addWidget(test_widget)
-
-    # Test buttons
-    fade_in_btn = QPushButton("Fade In")
-    fade_out_btn = QPushButton("Fade Out")
-    scale_in_btn = QPushButton("Scale In")
-    combined_btn = QPushButton("Combined Animation")
-
-    layout.addWidget(fade_in_btn)
-    layout.addWidget(fade_out_btn)
-    layout.addWidget(scale_in_btn)
-    layout.addWidget(combined_btn)
-
-    # Create animation manager
-    anim_manager = AnimationManager(test_widget)
-
-    # Connect buttons
-    fade_in_btn.clicked.connect(lambda: anim_manager.fade_in())
-    fade_out_btn.clicked.connect(lambda: anim_manager.fade_out(hide_on_finish=False))
-    scale_in_btn.clicked.connect(lambda: anim_manager.scale_in_from_center(window.rect().center()))
-    combined_btn.clicked.connect(lambda: anim_manager.combined_fade_and_scale_in(window.rect().center()))
-
-    window.show()
-    sys.exit(app.exec())

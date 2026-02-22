@@ -1,9 +1,3 @@
-# ========================================
-# REFACTORED ExpandedFolderView.py - Step 1
-# ========================================
-# Remove folder_ref dependency and FloatingIcon logic
-# Make it a simpler, more focused component
-
 from PyQt6.QtCore import Qt, pyqtSignal, QPropertyAnimation, QEasingCurve, QTimer
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGridLayout, QScrollArea,
@@ -12,26 +6,23 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtGui import QFont, QColor
 from PyQt6.QtWidgets import QPushButton
 
-
-from .managers.AnimationManager import AnimationManager
+from .animation import AnimationManager
 
 
 class ExpandedFolderView(QFrame):
-    """Material Design 3 expanded folder view - simplified without folder_ref dependency"""
+    """Material Design 3 expanded folder view"""
 
-    # Simplified signals
     close_requested = pyqtSignal()
     app_selected = pyqtSignal(str)
     close_current_app_requested = pyqtSignal()
-    minimize_requested = pyqtSignal()  # NEW: Request minimize to floating icon
+    minimize_requested = pyqtSignal()
 
     def __init__(self, folder_name, parent=None):
         super().__init__(parent)
         self.setObjectName("ExpandedFolderView")
-        self.folder_name = folder_name  # Just store the name, no reference
+        self.folder_name = folder_name
         self.setFixedSize(580, 680)  # Material Design proportions
 
-        # Simplified state management
         self._is_closing = False
         self._current_app_name = None
 
@@ -40,7 +31,6 @@ class ExpandedFolderView(QFrame):
         self.setup_ui()
         self.animation_manager = AnimationManager(self)
         self.animation_manager.animation_finished.connect(self._on_animation_finished)
-
 
     def setup_ui(self):
         """Material Design 3 surface styling"""
@@ -59,7 +49,7 @@ class ExpandedFolderView(QFrame):
             shadow.setColor(QColor(0, 0, 0, 30))  # Material elevation 3
             shadow.setOffset(0, 6)
             self.setGraphicsEffect(shadow)
-        except:
+        except Exception:
             pass
 
         # Material Design layout with proper spacing
@@ -81,7 +71,7 @@ class ExpandedFolderView(QFrame):
             if not font.exactMatch():
                 font = QFont("Segoe UI", 28, QFont.Weight.Medium)
             self.title_label.setFont(font)
-        except:
+        except Exception:
             pass
 
         self.title_label.setStyleSheet("""
@@ -125,11 +115,10 @@ class ExpandedFolderView(QFrame):
             close_button_shadow.setColor(QColor(0, 0, 0, 40))
             close_button_shadow.setOffset(0, 2)
             self.close_app_button.setGraphicsEffect(close_button_shadow)
-        except:
+        except Exception:
             pass
 
         header_layout.addStretch(1)
-        # header_layout.addWidget(self.title_label, 2)
         header_layout.addWidget(self.close_app_button, 0, Qt.AlignmentFlag.AlignRight)
 
         main_layout.addLayout(header_layout)
@@ -139,9 +128,9 @@ class ExpandedFolderView(QFrame):
         self.scroll_area.setObjectName("ExpandedScrollArea")
         self.scroll_area.setWidgetResizable(True)
         self.scroll_area.setStyleSheet("""
-            QScrollArea { 
-                border: none; 
-                background: transparent; 
+            QScrollArea {
+                border: none;
+                background: transparent;
             }
             QScrollBar:vertical {
                 background-color: #F7F2FA;
@@ -174,7 +163,7 @@ class ExpandedFolderView(QFrame):
         main_layout.addWidget(self.scroll_area)
 
     def add_app_icon(self, app_icon_widget, row, col):
-        """Add an app icon to the grid - called by Folder class"""
+        """Add an app icon to the grid"""
         self.grid_layout.addWidget(app_icon_widget, row, col)
 
     def safe_close(self):
@@ -187,12 +176,9 @@ class ExpandedFolderView(QFrame):
 
     def fade_in(self, center_pos):
         """Material Design scale-in animation"""
-        # print(f"Material fade_in called with center_pos: {center_pos}")
-
         # Stop any existing animations
         self.animation_manager.stop_all_animations()
 
-        # Use AnimationManager for consistent behavior
         self.animation_manager.combined_fade_and_scale_in(
             center_pos=center_pos,
             callback=self.animation_finished
@@ -209,13 +195,11 @@ class ExpandedFolderView(QFrame):
         )
 
     def on_app_clicked(self, app_name):
-        """Handle app selection - simplified without FloatingIcon logic"""
-        # print(f"Material Design app selected: {app_name}")
+        """Handle app selection"""
         self._current_app_name = app_name
         self.app_selected.emit(app_name)
         self.show_close_app_button()
 
-        # CHANGED: Request minimize instead of handling FloatingIcon internally
         self.minimize_requested.emit()
 
     def show_close_app_button(self):
@@ -240,8 +224,7 @@ class ExpandedFolderView(QFrame):
         self._current_app_name = None
 
     def on_close_app_clicked(self):
-        """Handle close app button click - simplified"""
-        # print(f"Material Design close app: {self._current_app_name}")
+        """Handle close app button click"""
         self.close_current_app_requested.emit()
         self.hide_close_app_button()
 
@@ -263,9 +246,7 @@ class ExpandedFolderView(QFrame):
 
     def _on_animation_finished(self, animation_id: str):
         """Handle specific animation completion"""
-        # print(f"Animation completed: {animation_id}")
         pass
-
 
     def safe_hide(self):
         """Safe hide with Material Design cleanup"""
@@ -287,63 +268,3 @@ class ExpandedFolderView(QFrame):
                 item.widget().setParent(None)
                 item.widget().deleteLater()
         event.accept()
-
-
-if __name__ == "__main__":
-    import sys
-    from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton
-
-    app = QApplication(sys.argv)
-
-    # Material Design application styling
-    app.setStyle('Fusion')
-    app.setStyleSheet("""
-        QApplication {
-            font-family: 'Roboto', 'Segoe UI', sans-serif;
-            background: #FFFBFE;
-        }
-    """)
-
-    main_window = QMainWindow()
-    main_window.resize(900, 700)
-    main_window.setStyleSheet("""
-        QMainWindow {
-            background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-                stop:0 #FFFBFE,
-                stop:1 #F7F2FA);
-        }
-    """)
-
-    # Test the refactored ExpandedFolderView
-    folder_view = ExpandedFolderView("Material Apps", main_window)
-
-    # Connect test signals
-    folder_view.close_requested.connect(lambda: print("Close requested"))
-    folder_view.app_selected.connect(lambda name: print(f"App selected: {name}"))
-    folder_view.minimize_requested.connect(lambda: print("Minimize requested"))
-
-    folder_view.fade_in(main_window.rect().center())
-    main_window.setCentralWidget(folder_view)
-    main_window.show()
-
-    # Test button to trigger minimize
-    test_button = QPushButton("Test Minimize", main_window)
-    test_button.setGeometry(10, 10, 200, 48)
-    test_button.setStyleSheet("""
-        QPushButton {
-            background: #6750A4;
-            border: none;
-            border-radius: 24px;
-            color: white;
-            font-size: 14px;
-            font-weight: 500;
-            font-family: 'Roboto', 'Segoe UI', sans-serif;
-        }
-        QPushButton:hover {
-            background: #7965AF;
-        }
-    """)
-    test_button.clicked.connect(folder_view.minimize_requested.emit)
-    test_button.show()
-
-    sys.exit(app.exec())

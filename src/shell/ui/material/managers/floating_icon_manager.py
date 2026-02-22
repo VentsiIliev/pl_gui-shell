@@ -2,7 +2,7 @@ from PyQt6.QtCore import QTimer
 
 
 class FloatingIconManager:
-    """Fixed floating icon manager"""
+    """Manages floating folder icon lifecycle"""
 
     def __init__(self, parent_widget):
         self.parent_widget = parent_widget
@@ -18,7 +18,7 @@ class FloatingIconManager:
         if not main_window:
             return
 
-        from ..FloatingFolderIcon import FloatingFolderIcon
+        from ..floating_icon import FloatingFolderIcon
         self.floating_icon = FloatingFolderIcon(folder_name, main_window)
         self.floating_icon.move(10, 10)
         self.floating_icon.clicked_signal.connect(on_click_callback)
@@ -39,7 +39,7 @@ class FloatingIconManager:
         if self.floating_icon:
             try:
                 self.floating_icon.clicked_signal.disconnect()
-            except:
+            except Exception:
                 pass
 
             self.floating_icon.deleteLater()
@@ -48,7 +48,6 @@ class FloatingIconManager:
         if self._cleanup_timer:
             self._cleanup_timer.stop()
             self._cleanup_timer = None
-        # print("FloatingIconManager: Floating icon cleaned up")
 
     def _get_main_window(self):
         parent = self.parent_widget.parent()
