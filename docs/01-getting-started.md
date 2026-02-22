@@ -21,7 +21,7 @@ python -m venv .venv
 source .venv/bin/activate
 
 # Install dependencies
-pip install PyQt6 qtawesome
+pip install -r requirements.txt
 ```
 
 ## Project Structure
