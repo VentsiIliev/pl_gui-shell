@@ -5,8 +5,8 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QGridLayout, QSizePolicy,
                              QApplication)
 from typing import Callable
 
-# CHANGE: Import the new FolderController system instead of old Folder
-from src.shell.components.folder.Folder import FolderWidget, FolderController
+# CHANGE: Import only FolderController - FolderWidget comes from UIFactory
+from src.shell.components.folder.Folder import FolderController
 
 @dataclass
 class FolderConfig:
@@ -25,12 +25,13 @@ class FolderLauncher(QWidget):
     app_selected = pyqtSignal(str)  # App name
     close_current_app_requested = pyqtSignal()
 
-    def __init__(self, parent=None, folder_config_list=None,main_window=None):
+    def __init__(self, parent=None, folder_config_list=None, main_window=None, ui_factory=None):
         super().__init__(parent)
         self.folder_config_list = folder_config_list
         self.folder_controllers = []  # Track all folder controllers
         self.folder_widgets = []  # Track all folder widgets
         self.main_window = main_window  # Store main window reference
+        self.ui_factory = ui_factory
         self.setup_ui()
 
     def setup_ui(self):
@@ -79,19 +80,16 @@ class FolderLauncher(QWidget):
     def __create_folder(self, ID,folder_name, apps,translate_fn):
 
         """Create a folder widget and its controller"""
-        # Create folder widget
-        folder_widget = FolderWidget(ID,folder_name)
+        # Create folder widget via factory
+        folder_widget = self.ui_factory.create_folder_widget(ID, folder_name)
         folder_widget.translate_fn = translate_fn
-        
-        # Connect to new translation system
 
         # Add apps to folder widget
         for widget_type, icon_path in apps:
             folder_widget.add_app(widget_type, icon_path)
 
-        # Create controller
-        # print(f"Creating FolderController for folder '{folder_name}' with ID = {ID} with main_window: {self.main_window}")
-        folder_controller = FolderController(folder_widget, self.main_window)
+        # Create controller with factory injection
+        folder_controller = FolderController(folder_widget, self.main_window, ui_factory=self.ui_factory)
 
         return folder_widget, folder_controller
 

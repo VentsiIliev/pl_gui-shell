@@ -12,9 +12,6 @@ from PyQt6.QtWidgets import (
 )
 
 from .MenuIcon import MenuIcon
-from .managers.ExpandedViewManager import ExpandedViewManager
-from .managers.FloatingIconManager import FloatingIconManager
-from .managers.OverlayManager import OverlayManager
 
 
 @dataclass
@@ -363,7 +360,7 @@ class FolderController(QObject):
     app_selected = pyqtSignal(str)
     close_current_app_signal = pyqtSignal()
 
-    def __init__(self, folder_widget: FolderWidget, main_window=None, parent=None):
+    def __init__(self, folder_widget: FolderWidget, main_window=None, ui_factory=None, parent=None):
         super().__init__(parent)  # Initialize QObject
         self.folder_widget = folder_widget
         self.main_window = main_window
@@ -371,10 +368,12 @@ class FolderController(QObject):
         # Business state
         self.state = FolderState()
 
-        # Managers for complex operations
-        self.floating_icon_manager = FloatingIconManager(folder_widget)
-        self.overlay_manager = OverlayManager(folder_widget,overlay_parent=self.main_window,overlay_callback=self.handle_outside_click)
-        self.expanded_view_manager = ExpandedViewManager(folder_widget)
+        # Managers for complex operations - created via injected factory
+        self.floating_icon_manager = ui_factory.create_floating_icon_manager(folder_widget)
+        self.overlay_manager = ui_factory.create_overlay_manager(
+            folder_widget, overlay_parent=self.main_window, overlay_callback=self.handle_outside_click
+        )
+        self.expanded_view_manager = ui_factory.create_expanded_view_manager(folder_widget)
 
         # Connect to UI events
         self.folder_widget.clicked.connect(self.handle_folder_click)
@@ -554,7 +553,8 @@ if __name__ == "__main__":
     folder_widget.add_app("Development Tools", "⚙️")
 
     # Create controller for business logic - NOW WORKS WITH SIGNALS
-    folder_controller = FolderController(folder_widget, main_window)
+    from src.shell.components.material_factory import MaterialUIFactory
+    folder_controller = FolderController(folder_widget, main_window, ui_factory=MaterialUIFactory())
 
     # Test the signals
     folder_controller.folder_opened.connect(lambda: print("SIGNAL: Folder opened!"))

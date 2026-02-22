@@ -19,18 +19,23 @@ class AppShell(QWidget):
     def __init__(
         self,
         app_descriptors: List[AppDescriptor],
-        widget_factory: Callable[[str], QWidget]
+        widget_factory: Callable[[str], QWidget],
+        ui_factory=None
     ):
         """
         Args:
             app_descriptors: List of apps to display in folders
             widget_factory: Callable that creates widgets given an app name
+            ui_factory: Optional UIFactory for swappable UI components (defaults to MaterialUIFactory)
         """
         super().__init__()
 
         # Store injected dependencies
         self._app_descriptors = app_descriptors
         self._widget_factory = widget_factory
+
+        from src.shell.components.material_factory import MaterialUIFactory
+        self._ui_factory = ui_factory or MaterialUIFactory()
 
         # Internal state
         self.current_running_app = None  # Track currently running app
@@ -241,7 +246,9 @@ class AppShell(QWidget):
             self.stacked_widget.removeWidget(self.folders_page)
             self.folders_page.deleteLater()
 
-        self.folders_page = FolderLauncher(folder_config_list=folder_config_list, main_window=self)
+        self.folders_page = FolderLauncher(
+            folder_config_list=folder_config_list, main_window=self, ui_factory=self._ui_factory
+        )
 
         # Connect signals from the folders page
         self.folders_page.folder_opened.connect(self.on_folder_opened)
