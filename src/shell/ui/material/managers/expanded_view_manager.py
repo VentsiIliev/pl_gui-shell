@@ -1,3 +1,4 @@
+from src.shell.ui.styles import QTA_ICON_COLOR
 from ..menu_icon import MenuIcon
 
 
@@ -26,7 +27,7 @@ class ExpandedViewManager:
         cols = 4
         for i, button in enumerate(buttons):
             row, col = divmod(i, cols)
-            button_copy = MenuIcon(button.icon_label, button.icon_path, button.icon_text, button.callback)
+            button_copy = MenuIcon(button.icon_label, button.icon_path, button.icon_text, button.callback, qta_color=QTA_ICON_COLOR)
             button_copy.button_clicked.connect(self.expanded_view.on_app_clicked)
             self.expanded_view.add_app_icon(button_copy, row, col)
 

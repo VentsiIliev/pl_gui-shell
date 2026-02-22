@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
 from PyQt6.QtCore import pyqtSignal, QTimer, QObject
+from src.shell.ui.styles import OVERLAY_BG, OVERLAY_LIGHT, OVERLAY_SUBTLE, OVERLAY_FAINT
 
 
 @dataclass
@@ -95,7 +96,7 @@ class FolderController(QObject):
         """Business logic for minimizing to floating icon"""
         self.overlay_manager.hide_overlay()
         self.expanded_view_manager.fade_out()
-        self.overlay_manager.set_style("background-color: rgba(0, 0, 0, 0.05);")
+        self.overlay_manager.set_style(f"background-color: {OVERLAY_FAINT};")
         self.floating_icon_manager.show_floating_icon(
             self.folder_widget.folder_name,
             self.restore_from_floating_icon
@@ -105,7 +106,7 @@ class FolderController(QObject):
         """Business logic for restoring from floating icon"""
         self.overlay_manager.show_overlay()
         self.floating_icon_manager.hide_floating_icon()
-        self.overlay_manager.set_style("background-color: rgba(0, 0, 0, 0.32);")
+        self.overlay_manager.set_style(f"background-color: {OVERLAY_LIGHT};")
 
         if self.main_window:
             center = self.main_window.rect().center()
@@ -136,7 +137,7 @@ class FolderController(QObject):
         self.app_selected.emit(app_name)
 
         self.expanded_view_manager.show_close_button()
-        self.overlay_manager.set_style("background-color: rgba(0, 0, 0, 0.16);")
+        self.overlay_manager.set_style(f"background-color: {OVERLAY_SUBTLE};")
         self.overlay_manager.hide_overlay()
         QTimer.singleShot(300, self.minimize_to_floating_icon)
 

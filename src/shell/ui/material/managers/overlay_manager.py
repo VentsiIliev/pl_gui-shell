@@ -1,3 +1,4 @@
+from src.shell.ui.styles import OVERLAY_LIGHT
 from ..overlay import FolderOverlay
 
 
@@ -14,7 +15,7 @@ class OverlayManager:
         """Create and show overlay"""
         try:
             self.overlay.resize(self.overlay_parent.size())
-            self.overlay.setStyleSheet("background-color: rgba(0, 0, 0, 0.32);")
+            self.overlay.setStyleSheet(f"background-color: {OVERLAY_LIGHT};")
             self.overlay.fade_in()
         except Exception:
             import traceback

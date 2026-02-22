@@ -1,10 +1,11 @@
-import os
-
 from PyQt6.QtCore import Qt, pyqtSignal, QTimer, QSize
-from PyQt6.QtGui import QPixmap, QFont, QColor, QIcon, QPainter
-from src.shell.ui import styles
-import qtawesome as qta
-_QTA_ICON_CACHE = {}
+from PyQt6.QtGui import QFont, QColor
+from src.shell.ui.styles import (
+    PRIMARY, SURFACE, BORDER, TEXT_PRIMARY, TEXT_DISABLED, TEXT_ON_PRIMARY,
+    DISABLED_BG, DISABLED_BORDER, DISABLED_PREVIEW_BG, DISABLED_PREVIEW_BORDER,
+    SHADOW_LIGHT, SHADOW_PRIMARY_LIGHT, SHADOW_PRIMARY,
+    QTA_ICON_COLOR,
+)
 from PyQt6.QtWidgets import (
     QFrame, QLabel, QGridLayout, QVBoxLayout,
     QGraphicsDropShadowEffect, QSizePolicy
@@ -117,17 +118,17 @@ class FolderWidget(QFrame):
         """Material Design 3 UI setup - pure presentation"""
         self.layout_manager.setup_responsive_sizing()
 
-        self.setStyleSheet("""
-            QFrame {
-                background: #FFFBFE;
-                border: 1px solid #E7E0EC;
+        self.setStyleSheet(f"""
+            QFrame {{
+                background: {SURFACE};
+                border: 1px solid {BORDER};
                 border-radius: 24px;
-            }
+            }}
         """)
 
         shadow = QGraphicsDropShadowEffect()
         shadow.setBlurRadius(16)
-        shadow.setColor(QColor(0, 0, 0, 20))
+        shadow.setColor(QColor(*SHADOW_LIGHT))
         shadow.setOffset(0, 2)
         self.setGraphicsEffect(shadow)
 
@@ -140,17 +141,17 @@ class FolderWidget(QFrame):
 
         self.folder_preview = QFrame()
         self.folder_preview.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        self.folder_preview.setStyleSheet("""
-            QFrame {
-                background: #FFFBFE;
-                border: 1px solid #E7E0EC;
+        self.folder_preview.setStyleSheet(f"""
+            QFrame {{
+                background: {SURFACE};
+                border: 1px solid {BORDER};
                 border-radius: 28px;
-            }
+            }}
         """)
 
         preview_shadow = QGraphicsDropShadowEffect()
         preview_shadow.setBlurRadius(20)
-        preview_shadow.setColor(QColor(103, 80, 164, 30))
+        preview_shadow.setColor(QColor(*SHADOW_PRIMARY_LIGHT))
         preview_shadow.setOffset(0, 4)
         self.folder_preview.setGraphicsEffect(preview_shadow)
         self.folder_preview.mousePressEvent = self.folder_clicked
@@ -164,15 +165,15 @@ class FolderWidget(QFrame):
         self.title_label.setWordWrap(True)
         self.layout_manager.update_typography()
 
-        self.title_label.setStyleSheet("""
-            QLabel {
-                color: #1D1B20;
+        self.title_label.setStyleSheet(f"""
+            QLabel {{
+                color: {TEXT_PRIMARY};
                 background-color: transparent;
                 border: none;
                 padding: 12px 16px;
                 font-weight: 500;
                 letter-spacing: 0px;
-            }
+            }}
         """)
 
         self.header_layout.addWidget(self.folder_preview, 1)
@@ -196,7 +197,7 @@ class FolderWidget(QFrame):
             row, col = divmod(i, 2)
 
             try:
-                small_btn = MenuIcon(app.icon_label, app.icon_path, app.icon_text if hasattr(app, 'icon_text') else "", app.callback if hasattr(app, 'callback') else None, parent=self, qta_color=styles.QTA_ICON_COLOR)
+                small_btn = MenuIcon(app.icon_label, app.icon_path, app.icon_text if hasattr(app, 'icon_text') else "", app.callback if hasattr(app, 'callback') else None, parent=self, qta_color=QTA_ICON_COLOR)
                 small_btn.setFixedSize(icon_size, icon_size)
                 # Ensure clicking a preview button opens the folder: forward its signals to the folder's clicked
                 try:
@@ -211,7 +212,7 @@ class FolderWidget(QFrame):
                 try:
                     mini_shadow = QGraphicsDropShadowEffect()
                     mini_shadow.setBlurRadius(8)
-                    mini_shadow.setColor(QColor(103, 80, 164, 40))
+                    mini_shadow.setColor(QColor(*SHADOW_PRIMARY))
                     mini_shadow.setOffset(0, 2)
                     small_btn.setGraphicsEffect(mini_shadow)
                 except Exception:
@@ -228,33 +229,33 @@ class FolderWidget(QFrame):
 
         if grayed_out:
             # Outer frame
-            self.setStyleSheet("""
-                QFrame {
-                    background: #EDE7F6;
-                    border: 1px dashed #B0A7BC;
+            self.setStyleSheet(f"""
+                QFrame {{
+                    background: {DISABLED_BG};
+                    border: 1px dashed {DISABLED_BORDER};
                     border-radius: 24px;
-                }
+                }}
             """)
 
             # Title text
-            self.title_label.setStyleSheet("""
-                QLabel {
-                    color: #9C9A9E;
+            self.title_label.setStyleSheet(f"""
+                QLabel {{
+                    color: {TEXT_DISABLED};
                     background-color: transparent;
                     border: none;
                     padding: 12px 16px;
                     font-weight: 500;
                     letter-spacing: 0px;
-                }
+                }}
             """)
 
             # Folder preview (icons background dimmed)
-            self.folder_preview.setStyleSheet("""
-                QFrame {
-                    background: #F3EDF7;
-                    border: 1px solid #C4C0CA;
+            self.folder_preview.setStyleSheet(f"""
+                QFrame {{
+                    background: {DISABLED_PREVIEW_BG};
+                    border: 1px solid {DISABLED_PREVIEW_BORDER};
                     border-radius: 28px;
-                }
+                }}
             """)
 
             # Dim all child icons
@@ -266,33 +267,33 @@ class FolderWidget(QFrame):
 
         else:
             # Outer frame
-            self.setStyleSheet("""
-                QFrame {
-                    background: #FFFBFE;
-                    border: 1px solid #E7E0EC;
+            self.setStyleSheet(f"""
+                QFrame {{
+                    background: {SURFACE};
+                    border: 1px solid {BORDER};
                     border-radius: 24px;
-                }
+                }}
             """)
 
             # Reset title
-            self.title_label.setStyleSheet("""
-                QLabel {
-                    color: #1D1B20;
+            self.title_label.setStyleSheet(f"""
+                QLabel {{
+                    color: {TEXT_PRIMARY};
                     background-color: transparent;
                     border: none;
                     padding: 12px 16px;
                     font-weight: 500;
                     letter-spacing: 0px;
-                }
+                }}
             """)
 
             # Reset preview
-            self.folder_preview.setStyleSheet("""
-                QFrame {
-                    background: #FFFBFE;
-                    border: 1px solid #E7E0EC;
+            self.folder_preview.setStyleSheet(f"""
+                QFrame {{
+                    background: {SURFACE};
+                    border: 1px solid {BORDER};
                     border-radius: 28px;
-                }
+                }}
             """)
 
             # Reset icons (restore drop shadow + normal look)

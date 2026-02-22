@@ -6,6 +6,12 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtGui import QFont, QColor
 from PyQt6.QtWidgets import QPushButton
 
+from src.shell.ui.styles import (
+    PRIMARY, PRIMARY_DARK, PRIMARY_HOVER, SURFACE, BORDER,
+    TEXT_PRIMARY, TEXT_ON_PRIMARY,
+    SCROLLBAR_BG, SCROLLBAR_HANDLE, SCROLLBAR_HANDLE_HOVER,
+    SHADOW_MEDIUM, SHADOW_DARK,
+)
 from .animation import AnimationManager
 
 
@@ -34,19 +40,19 @@ class ExpandedFolderView(QFrame):
 
     def setup_ui(self):
         """Material Design 3 surface styling"""
-        self.setStyleSheet("""
-            QFrame {
-                background: #FFFBFE;
-                border: 1px solid #E7E0EC;
+        self.setStyleSheet(f"""
+            QFrame {{
+                background: {SURFACE};
+                border: 1px solid {BORDER};
                 border-radius: 28px;
-            }
+            }}
         """)
 
         # Material Design elevation shadow
         try:
             shadow = QGraphicsDropShadowEffect()
             shadow.setBlurRadius(32)
-            shadow.setColor(QColor(0, 0, 0, 30))  # Material elevation 3
+            shadow.setColor(QColor(*SHADOW_MEDIUM))
             shadow.setOffset(0, 6)
             self.setGraphicsEffect(shadow)
         except Exception:
@@ -74,36 +80,36 @@ class ExpandedFolderView(QFrame):
         except Exception:
             pass
 
-        self.title_label.setStyleSheet("""
-            QLabel {
-                color: #1D1B20;
+        self.title_label.setStyleSheet(f"""
+            QLabel {{
+                color: {TEXT_PRIMARY};
                 background-color: transparent;
                 padding-bottom: 8px;
                 font-weight: 500;
                 letter-spacing: 0px;
-            }
+            }}
         """)
 
         # Material Design filled button for close app
         self.close_app_button = QPushButton("Close App")
         self.close_app_button.setFixedSize(140, 40)
-        self.close_app_button.setStyleSheet("""
-            QPushButton {
-                background: #6750A4;
+        self.close_app_button.setStyleSheet(f"""
+            QPushButton {{
+                background: {PRIMARY};
                 border: none;
                 border-radius: 20px;
-                color: white;
+                color: {TEXT_ON_PRIMARY};
                 font-size: 14px;
                 font-weight: 500;
                 font-family: 'Roboto', 'Segoe UI', sans-serif;
                 padding: 10px 24px;
-            }
-            QPushButton:hover {
-                background: #7965AF;
-            }
-            QPushButton:pressed {
-                background: #5A3D99;
-            }
+            }}
+            QPushButton:hover {{
+                background: {PRIMARY_HOVER};
+            }}
+            QPushButton:pressed {{
+                background: {PRIMARY_DARK};
+            }}
         """)
         self.close_app_button.clicked.connect(self.on_close_app_clicked)
         self.close_app_button.hide()
@@ -112,7 +118,7 @@ class ExpandedFolderView(QFrame):
         try:
             close_button_shadow = QGraphicsDropShadowEffect()
             close_button_shadow.setBlurRadius(8)
-            close_button_shadow.setColor(QColor(0, 0, 0, 40))
+            close_button_shadow.setColor(QColor(*SHADOW_DARK))
             close_button_shadow.setOffset(0, 2)
             self.close_app_button.setGraphicsEffect(close_button_shadow)
         except Exception:
@@ -127,30 +133,30 @@ class ExpandedFolderView(QFrame):
         self.scroll_area = QScrollArea()
         self.scroll_area.setObjectName("ExpandedScrollArea")
         self.scroll_area.setWidgetResizable(True)
-        self.scroll_area.setStyleSheet("""
-            QScrollArea {
+        self.scroll_area.setStyleSheet(f"""
+            QScrollArea {{
                 border: none;
                 background: transparent;
-            }
-            QScrollBar:vertical {
-                background-color: #F7F2FA;
+            }}
+            QScrollBar:vertical {{
+                background-color: {SCROLLBAR_BG};
                 width: 12px;
                 border-radius: 6px;
                 margin: 2px;
-            }
-            QScrollBar::handle:vertical {
-                background-color: #CAC4D0;
+            }}
+            QScrollBar::handle:vertical {{
+                background-color: {SCROLLBAR_HANDLE};
                 border-radius: 6px;
                 min-height: 30px;
-            }
-            QScrollBar::handle:vertical:hover {
-                background-color: #79747E;
-            }
-            QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+            }}
+            QScrollBar::handle:vertical:hover {{
+                background-color: {SCROLLBAR_HANDLE_HOVER};
+            }}
+            QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {{
                 border: none;
                 background: none;
                 height: 0px;
-            }
+            }}
         """)
 
         grid_widget = QWidget()

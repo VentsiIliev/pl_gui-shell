@@ -1,6 +1,7 @@
 from PyQt6.QtCore import pyqtSignal, Qt
 from PyQt6.QtWidgets import QWidget
 
+from src.shell.ui.styles import OVERLAY_BG
 from .animation import AnimationManager
 
 
@@ -11,7 +12,7 @@ class FolderOverlay(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setStyleSheet("background-color: rgba(0, 0, 0, 0.5);")
+        self.setStyleSheet(f"background-color: {OVERLAY_BG};")
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self.animation_manager = AnimationManager(self)
 

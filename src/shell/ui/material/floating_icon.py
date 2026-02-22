@@ -2,6 +2,9 @@ from PyQt6.QtCore import Qt, pyqtSignal, QSize
 from PyQt6.QtWidgets import QGraphicsDropShadowEffect, QPushButton
 from PyQt6.QtGui import QColor
 
+from src.shell.ui.styles import (
+    PRIMARY, PRIMARY_DARK, PRIMARY_HOVER, SHADOW_FAB,
+)
 from .animation import AnimationManager
 
 
@@ -19,9 +22,9 @@ class FloatingFolderIcon(QPushButton):
 
     def setup_ui(self):
         """Setup Material Design floating action button"""
-        self.setStyleSheet("""
-            QPushButton {
-                background: #6750A4;
+        self.setStyleSheet(f"""
+            QPushButton {{
+                background: {PRIMARY};
                 border: none;
                 border-radius: 40px;
                 font-size: 20px;
@@ -29,15 +32,15 @@ class FloatingFolderIcon(QPushButton):
                 color: white;
                 font-family: 'Roboto', 'Segoe UI', sans-serif;
                 padding: 12px;
-            }
-            QPushButton:hover {
-                background: #7965AF;
+            }}
+            QPushButton:hover {{
+                background: {PRIMARY_HOVER};
                 transform: scale(1.05);
-            }
-            QPushButton:pressed {
-                background: #5A3D99;
+            }}
+            QPushButton:pressed {{
+                background: {PRIMARY_DARK};
                 transform: scale(0.95);
-            }
+            }}
         """)
 
         self.setText("\u2630")
@@ -48,7 +51,7 @@ class FloatingFolderIcon(QPushButton):
         try:
             shadow = QGraphicsDropShadowEffect()
             shadow.setBlurRadius(24)
-            shadow.setColor(QColor(0, 0, 0, 60))  # Material Design shadow
+            shadow.setColor(QColor(*SHADOW_FAB))
             shadow.setOffset(0, 8)
             self.setGraphicsEffect(shadow)
         except Exception as e:

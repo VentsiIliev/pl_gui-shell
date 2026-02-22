@@ -1,12 +1,16 @@
-import os
-
 from PyQt6.QtCore import Qt, pyqtSignal, QSize
-from PyQt6.QtGui import QFont, QColor, QIcon, QPainter
+from PyQt6.QtGui import QFont, QColor, QIcon
 from PyQt6.QtWidgets import (QPushButton, QGraphicsDropShadowEffect)
 
+from src.shell.ui.styles import (
+    PRIMARY, PRIMARY_DARK, PRIMARY_HOVER, TEXT_ON_PRIMARY,
+    SECONDARY_BG, SECONDARY_HOVER, SECONDARY_PRESSED,
+    TERTIARY_BG, TERTIARY_HOVER, TERTIARY_PRESSED, TERTIARY_TEXT,
+    DISABLED_BG, SCROLLBAR_HANDLE_HOVER,
+    SHADOW_PRIMARY, SHADOW_PRIMARY_HOVER,
+)
+from src.shell.ui.icon_loader import load_icon
 from .animation import AnimationManager
-import qtawesome as qta
-from src.shell.ui import styles
 
 
 class MenuIcon(QPushButton):
@@ -37,10 +41,10 @@ class MenuIcon(QPushButton):
         """Setup Material Design 3 styling with proper tokens"""
 
         # Material Design 3 filled button styling
-        self.setStyleSheet("""
-            QPushButton {
-                background: #6750A4;
-                color: #FFFFFF;
+        self.setStyleSheet(f"""
+            QPushButton {{
+                background: {PRIMARY};
+                color: {TEXT_ON_PRIMARY};
                 border: none;
                 border-radius: 28px;
                 font-size: 12px;
@@ -48,24 +52,24 @@ class MenuIcon(QPushButton):
                 font-family: 'Roboto', 'Segoe UI', sans-serif;
                 text-align: center;
                 padding: 8px;
-            }
-            QPushButton:hover {
-                background: #7965AF;
-            }
-            QPushButton:pressed {
-                background: #5A3D99;
-            }
-            QPushButton:disabled {
-                background: #E8DEF8;
-                color: #79747E;
-            }
+            }}
+            QPushButton:hover {{
+                background: {PRIMARY_HOVER};
+            }}
+            QPushButton:pressed {{
+                background: {PRIMARY_DARK};
+            }}
+            QPushButton:disabled {{
+                background: {DISABLED_BG};
+                color: {SCROLLBAR_HANDLE_HOVER};
+            }}
         """)
 
         # Material Design elevation shadow (level 1)
         try:
             shadow = QGraphicsDropShadowEffect()
             shadow.setBlurRadius(12)
-            shadow.setColor(QColor(103, 80, 164, 40))  # Primary color shadow
+            shadow.setColor(QColor(*SHADOW_PRIMARY))
             shadow.setOffset(0, 2)
             self.setGraphicsEffect(shadow)
         except Exception:
@@ -79,68 +83,16 @@ class MenuIcon(QPushButton):
 
     def setup_icon_content(self):
         """Setup icon content following Material Design icon guidelines"""
+        icon_size = int(self.width() * 0.5)
+        size = QSize(icon_size, icon_size)
 
-        # Handle QIcon object directly
-        if isinstance(self.icon_path, QIcon):
-            try:
-                icon_size = int(self.width() * 0.5)
-                qpix = self.icon_path.pixmap(QSize(icon_size, icon_size))
-                if not qpix.isNull():
-                    # If a qta_color was requested, tint the pixmap to that color
-                    color = self.qta_color if self.qta_color else None
-                    if color:
-                        try:
-                            # Fill with color then mask by original pixmap alpha
-                            tinted = QPixmap(qpix.size())
-                            tinted.fill(QColor(color))
-                            painter = QPainter(tinted)
-                            painter.setCompositionMode(QPainter.CompositionMode_DestinationIn)
-                            painter.drawPixmap(0, 0, qpix)
-                            painter.end()
-                            final_icon = QIcon(tinted)
-                        except Exception:
-                            final_icon = QIcon(qpix)
-                    else:
-                        final_icon = QIcon(qpix)
+        icon = load_icon(self.icon_path, color=self.qta_color, size=size)
+        if icon and not icon.isNull():
+            self.setIcon(icon)
+            self.setIconSize(size)
+            self.setText("")
+            return
 
-                    self.setIcon(final_icon)
-                    self.setIconSize(QSize(icon_size, icon_size))
-                    self.setText("")
-                    return
-            except Exception:
-                # fallback to other handling
-                pass
-        # If icon_path is a string, prefer filesystem paths first, otherwise try qtawesome icon string
-        if isinstance(self.icon_path, str):
-            try:
-                # 1) If it's a filesystem path, load it
-                if os.path.exists(self.icon_path):
-                    icon = QIcon(self.icon_path)
-                    if not icon.isNull():
-                        self.setIcon(icon)
-                        icon_size = int(self.width() * 0.5)
-                        self.setIconSize(QSize(icon_size, icon_size))
-                        self.setText("")
-                        return
-
-                # 2) Otherwise try to interpret as a qtawesome icon string
-                color = self.qta_color if self.qta_color else None
-                try:
-                    icon = qta.icon(self.icon_path) if color is None else qta.icon(self.icon_path, color=color)
-                except Exception:
-                    icon = None
-
-                if icon and not icon.isNull():
-                    self.setIcon(icon)
-                    icon_size = int(self.width() * 0.5)
-                    self.setIconSize(QSize(icon_size, icon_size))
-                    self.setText("")
-                    return
-            except Exception as e:
-                # If anything goes wrong, fall back to text
-                print(f"Error loading icon string/path: {e}")
-
-        # Fallback to Material Design text representation
         self.setup_fallback_text()
 
     def setup_fallback_text(self):
@@ -182,7 +134,7 @@ class MenuIcon(QPushButton):
         try:
             shadow = QGraphicsDropShadowEffect()
             shadow.setBlurRadius(16)
-            shadow.setColor(QColor(103, 80, 164, 60))  # Deeper shadow on hover
+            shadow.setColor(QColor(*SHADOW_PRIMARY_HOVER))
             shadow.setOffset(0, 4)
             self.setGraphicsEffect(shadow)
         except Exception:
@@ -196,7 +148,7 @@ class MenuIcon(QPushButton):
         try:
             shadow = QGraphicsDropShadowEffect()
             shadow.setBlurRadius(12)
-            shadow.setColor(QColor(103, 80, 164, 40))
+            shadow.setColor(QColor(*SHADOW_PRIMARY))
             shadow.setOffset(0, 2)
             self.setGraphicsEffect(shadow)
         except Exception:
@@ -238,22 +190,22 @@ class MenuIcon(QPushButton):
 
         style_variants = {
             "primary": {
-                "background": "#6750A4",
-                "hover": "#7965AF",
-                "pressed": "#5A3D99",
-                "text_color": "#FFFFFF"
+                "background": PRIMARY,
+                "hover": PRIMARY_HOVER,
+                "pressed": PRIMARY_DARK,
+                "text_color": TEXT_ON_PRIMARY
             },
             "secondary": {
-                "background": "#E8DEF8",
-                "hover": "#DDD2EA",
-                "pressed": "#D1C6DD",
-                "text_color": "#6750A4"
+                "background": SECONDARY_BG,
+                "hover": SECONDARY_HOVER,
+                "pressed": SECONDARY_PRESSED,
+                "text_color": PRIMARY
             },
             "tertiary": {
-                "background": "#F7F2FA",
-                "hover": "#F0EBEF",
-                "pressed": "#E9E3E4",
-                "text_color": "#7D5260"
+                "background": TERTIARY_BG,
+                "hover": TERTIARY_HOVER,
+                "pressed": TERTIARY_PRESSED,
+                "text_color": TERTIARY_TEXT
             }
         }
 
@@ -279,8 +231,8 @@ class MenuIcon(QPushButton):
                     background: {colors['pressed']};
                 }}
                 QPushButton:disabled {{
-                    background: #E8DEF8;
-                    color: #79747E;
+                    background: {DISABLED_BG};
+                    color: {SCROLLBAR_HANDLE_HOVER};
                 }}
             """)
 

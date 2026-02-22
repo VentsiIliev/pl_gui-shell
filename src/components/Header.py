@@ -1,12 +1,13 @@
 import os
 from typing import Callable, Optional
 
-import qtawesome as qta
 from PyQt6.QtCore import QSize, Qt, QEvent, pyqtSignal
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import (
     QHBoxLayout, QPushButton, QFrame
 )
+
+from src.shell.ui.icon_loader import load_icon
 
 
 
@@ -46,7 +47,7 @@ class Header(QFrame):
 
         # Dashboard Button
         self.dashboardButton: QPushButton = QPushButton()
-        self.dashboardButton.setIcon(QIcon(DASHBOARD_BUTTON_ICON_PATH))
+        self.dashboardButton.setIcon(load_icon(DASHBOARD_BUTTON_ICON_PATH))
         self.dashboardButton.clicked.connect(
             dashboard_button_callback if dashboard_button_callback else lambda: print("dashboard_button_callback is none")
         )
@@ -55,7 +56,7 @@ class Header(QFrame):
 
         # Menu Button
         self.menu_button: QPushButton = QPushButton()
-        self.menu_button.setIcon(QIcon(MENU_ICON_PATH))
+        self.menu_button.setIcon(load_icon(MENU_ICON_PATH))
         self.menu_button.clicked.connect(
             toggle_menu_callback if toggle_menu_callback else lambda: print("toggle_menu_callback is none")
         )
@@ -80,7 +81,7 @@ class Header(QFrame):
 
         # Power Toggle Button
         self.power_toggle_button: QPushButton = QPushButton()
-        self.power_toggle_button.setIcon(QIcon(OFF_ICON_PATH))
+        self.power_toggle_button.setIcon(load_icon(OFF_ICON_PATH))
         self.power_toggle_button.setToolTip("Power Off")
         self.power_toggle_button.setStyleSheet("border: none; background: white; padding: 0px;")
         self.power_toggle_button.clicked.connect(self.toggle_power)
@@ -90,7 +91,7 @@ class Header(QFrame):
         self.power_on: bool = False  # Power state
 
         self.userAccountButton: QPushButton = QPushButton()
-        self.userAccountButton.setIcon(qta.icon('fa5s.user'))
+        self.userAccountButton.setIcon(load_icon('fa5s.user'))
         self.userAccountButton.setStyleSheet("border: none; background: transparent; padding: 0px;")
         self.userAccountButton.clicked.connect(self.on_user_account_clicked)
         self.userAccountButton.setVisible(False)
@@ -142,7 +143,7 @@ class Header(QFrame):
 
     def toggle_power(self) -> None:
         self.power_on = not self.power_on
-        icon: QIcon = QIcon(ON_ICON_PATH) if self.power_on else QIcon(OFF_ICON_PATH)
+        icon: QIcon = load_icon(ON_ICON_PATH) if self.power_on else load_icon(OFF_ICON_PATH)
         tooltip: str = "Power On" if self.power_on else "Power Off"
         self.power_toggle_button.setIcon(icon)
         self.power_toggle_button.setToolTip(tooltip)
