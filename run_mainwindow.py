@@ -6,7 +6,6 @@ from PyQt6.QtWidgets import QApplication, QWidget
 from src.shell.AppShell import AppShell
 from src.core.app_descriptor import AppDescriptor
 from src.apps.base.AppWidget import AppWidget
-from src.factory.WidgetFactory import WidgetType
 
 def create_simple_factory():
     """Simple factory that always returns placeholder AppWidgets - no plugins!"""
@@ -21,36 +20,36 @@ def get_example_app_descriptors() -> List[AppDescriptor]:
     app_descriptors = [
         # Work folder (folder_id=1)
         AppDescriptor(
-            name=WidgetType.DASHBOARD.value,
+            name="Dashboard",
             icon_str="fa5s.tachometer-alt",
             folder_id=1
         ),
         AppDescriptor(
-            name=WidgetType.USER_MANAGEMENT.value,
+            name="Management",
             icon_str="fa5s.folder-open",
             folder_id=1
         ),
         AppDescriptor(
-            name=WidgetType.SETTINGS.value,
+            name="Settings",
             icon_str="fa5s.chart-bar",
             folder_id=1
         ),
 
         # Service folder (folder_id=2)
         AppDescriptor(
-            name=WidgetType.GALLERY.value,
+            name="GALLERY",
             icon_str="fa5s.cog",
             folder_id=2
         ),
         AppDescriptor(
-            name=WidgetType.CALIBRATION.value,
+            name="CALIBRATION",
             icon_str="fa5s.stethoscope",
             folder_id=2
         ),
 
         # Admin folder (folder_id=3)
         AppDescriptor(
-            name=WidgetType.ANALYTICS.value,
+            name="ANALYTICS",
             icon_str="fa5s.users",
             folder_id=3
         ),

@@ -7,7 +7,6 @@ from PyQt6.QtWidgets import (QVBoxLayout, QApplication)
 from src.core.app_descriptor import AppDescriptor
 from src.components.Header import Header
 from src.shell.FolderLauncher import FolderLauncher, FolderConfig
-from src.factory.WidgetFactory import WidgetType
 from src.shell.shell_config import ShellConfig
 
 
@@ -222,20 +221,10 @@ class AppShell(QWidget):
             # Resolve icon from QtAwesome string
             icon = qta.icon(desc.icon_str)
 
-            # Convert descriptor to WidgetType for FolderConfig compatibility
-            widget_type = None
-            for wt in WidgetType:
-                if wt.value == desc.name:
-                    widget_type = wt
-                    break
-
-            if widget_type:
-                if desc.folder_id not in filtered_apps:
-                    filtered_apps[desc.folder_id] = []
-                filtered_apps[desc.folder_id].append([widget_type, icon])
-                print(f"[AppShell] Added {desc.name} to folder {desc.folder_id}")
-            else:
-                print(f"[AppShell] Warning: No WidgetType found for {desc.name}")
+            if desc.folder_id not in filtered_apps:
+                filtered_apps[desc.folder_id] = []
+            filtered_apps[desc.folder_id].append([desc.name, icon])
+            print(f"[AppShell] Added {desc.name} to folder {desc.folder_id}")
 
         # Build folder configs from centralized configuration
         folder_config_list = []

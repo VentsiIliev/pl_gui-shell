@@ -87,7 +87,7 @@ class FolderLauncher(QWidget):
 
         # Add apps to folder widget
         for widget_type, icon_path in apps:
-            folder_widget.add_app(widget_type.value, icon_path)
+            folder_widget.add_app(widget_type, icon_path)
 
         # Create controller
         # print(f"Creating FolderController for folder '{folder_name}' with ID = {ID} with main_window: {self.main_window}")
