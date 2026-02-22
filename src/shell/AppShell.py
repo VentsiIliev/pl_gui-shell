@@ -1,5 +1,6 @@
 from typing import Callable, List
 import qtawesome as qta
+from src.shell.ui import styles
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtWidgets import (QStackedWidget, QFrame, QWidget)
 from PyQt6.QtWidgets import (QVBoxLayout, QApplication)
@@ -223,8 +224,12 @@ class AppShell(QWidget):
         filtered_apps = {}
 
         for desc in self._app_descriptors:
-            # Resolve icon from QtAwesome string
-            icon = qta.icon(desc.icon_str)
+            # Resolve icon from QtAwesome string using configured QTA_ICON_COLOR for mini previews
+            try:
+                icon = qta.icon(desc.icon_str, color=styles.QTA_ICON_COLOR)
+            except Exception:
+                # Fallback to default icon if color or icon string fails
+                icon = qta.icon(desc.icon_str)
 
             if desc.folder_id not in filtered_apps:
                 filtered_apps[desc.folder_id] = []

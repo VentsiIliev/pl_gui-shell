@@ -1,10 +1,12 @@
 import os
 
 from PyQt6.QtCore import Qt, pyqtSignal, QSize
-from PyQt6.QtGui import QFont, QColor, QIcon
+from PyQt6.QtGui import QFont, QColor, QIcon, QPainter
 from PyQt6.QtWidgets import (QPushButton, QGraphicsDropShadowEffect)
 
 from .animation import AnimationManager
+import qtawesome as qta
+from src.shell.ui import styles
 
 
 class MenuIcon(QPushButton):
@@ -12,12 +14,14 @@ class MenuIcon(QPushButton):
 
     button_clicked = pyqtSignal(str)
 
-    def __init__(self, icon_label, icon_path, icon_text="", callback=None, parent=None):
+    def __init__(self, icon_label, icon_path, icon_text="", callback=None, parent=None, qta_color=None):
         super().__init__(parent)
         self.icon_label = icon_label
         self.icon_path = icon_path
         self.icon_text = icon_text
         self.callback = callback
+        # Optional color to use when rendering qtawesome icon strings specifically for mini icons
+        self.qta_color = qta_color
         self._original_rect = None
 
         # Material Design touch target size (minimum 48dp)
@@ -78,24 +82,63 @@ class MenuIcon(QPushButton):
 
         # Handle QIcon object directly
         if isinstance(self.icon_path, QIcon):
-            if not self.icon_path.isNull():
-                self.setIcon(self.icon_path)
-                icon_size = int(self.width() * 0.5)
-                self.setIconSize(QSize(icon_size, icon_size))
-                self.setText("")
-                return
-        # Try to load actual icon from path
-        elif self.icon_path and isinstance(self.icon_path, str) and os.path.exists(self.icon_path):
             try:
-                icon = QIcon(self.icon_path)
-                if not icon.isNull():
+                icon_size = int(self.width() * 0.5)
+                qpix = self.icon_path.pixmap(QSize(icon_size, icon_size))
+                if not qpix.isNull():
+                    # If a qta_color was requested, tint the pixmap to that color
+                    color = self.qta_color if self.qta_color else None
+                    if color:
+                        try:
+                            # Fill with color then mask by original pixmap alpha
+                            tinted = QPixmap(qpix.size())
+                            tinted.fill(QColor(color))
+                            painter = QPainter(tinted)
+                            painter.setCompositionMode(QPainter.CompositionMode_DestinationIn)
+                            painter.drawPixmap(0, 0, qpix)
+                            painter.end()
+                            final_icon = QIcon(tinted)
+                        except Exception:
+                            final_icon = QIcon(qpix)
+                    else:
+                        final_icon = QIcon(qpix)
+
+                    self.setIcon(final_icon)
+                    self.setIconSize(QSize(icon_size, icon_size))
+                    self.setText("")
+                    return
+            except Exception:
+                # fallback to other handling
+                pass
+        # If icon_path is a string, prefer filesystem paths first, otherwise try qtawesome icon string
+        if isinstance(self.icon_path, str):
+            try:
+                # 1) If it's a filesystem path, load it
+                if os.path.exists(self.icon_path):
+                    icon = QIcon(self.icon_path)
+                    if not icon.isNull():
+                        self.setIcon(icon)
+                        icon_size = int(self.width() * 0.5)
+                        self.setIconSize(QSize(icon_size, icon_size))
+                        self.setText("")
+                        return
+
+                # 2) Otherwise try to interpret as a qtawesome icon string
+                color = self.qta_color if self.qta_color else None
+                try:
+                    icon = qta.icon(self.icon_path) if color is None else qta.icon(self.icon_path, color=color)
+                except Exception:
+                    icon = None
+
+                if icon and not icon.isNull():
                     self.setIcon(icon)
                     icon_size = int(self.width() * 0.5)
                     self.setIconSize(QSize(icon_size, icon_size))
                     self.setText("")
                     return
             except Exception as e:
-                print(f"Error loading icon: {e}")
+                # If anything goes wrong, fall back to text
+                print(f"Error loading icon string/path: {e}")
 
         # Fallback to Material Design text representation
         self.setup_fallback_text()

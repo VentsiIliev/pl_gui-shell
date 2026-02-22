@@ -1,5 +1,10 @@
+import os
+
 from PyQt6.QtCore import Qt, pyqtSignal, QTimer, QSize
-from PyQt6.QtGui import QPixmap, QFont, QColor
+from PyQt6.QtGui import QPixmap, QFont, QColor, QIcon, QPainter
+from src.shell.ui import styles
+import qtawesome as qta
+_QTA_ICON_CACHE = {}
 from PyQt6.QtWidgets import (
     QFrame, QLabel, QGridLayout, QVBoxLayout,
     QGraphicsDropShadowEffect, QSizePolicy
@@ -190,52 +195,32 @@ class FolderWidget(QFrame):
         for i, app in enumerate(preview_apps):
             row, col = divmod(i, 2)
 
-            mini_icon = QLabel()
-            mini_icon.setFixedSize(icon_size, icon_size)
-            mini_icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-            border_radius = max(16, min(28, int(icon_size * 0.25)))
-            mini_icon.setStyleSheet(f"""
-                QLabel {{
-                    background: #6750A4;
-                    border: none;
-                    border-radius: {border_radius}px;
-                    font-size: {max(12, int(icon_size * 0.18))}px;
-                    font-weight: 500;
-                    color: white;
-                    font-family: 'Roboto', 'Segoe UI', sans-serif;
-                }}
-            """)
-
             try:
-                mini_shadow = QGraphicsDropShadowEffect()
-                mini_shadow.setBlurRadius(8)
-                mini_shadow.setColor(QColor(103, 80, 164, 40))
-                mini_shadow.setOffset(0, 2)
-                mini_icon.setGraphicsEffect(mini_shadow)
+                small_btn = MenuIcon(app.icon_label, app.icon_path, app.icon_text if hasattr(app, 'icon_text') else "", app.callback if hasattr(app, 'callback') else None, parent=self, qta_color=styles.QTA_ICON_COLOR)
+                small_btn.setFixedSize(icon_size, icon_size)
+                # Ensure clicking a preview button opens the folder: forward its signals to the folder's clicked
+                try:
+                    # Ensure clicking the small button invokes the same behavior as clicking the folder preview
+                    small_btn.mousePressEvent = lambda event, s=self: s.folder_clicked(event)
+                except Exception:
+                    pass
+                try:
+                    small_btn.setup_icon_content()
+                except Exception:
+                    pass
+                try:
+                    mini_shadow = QGraphicsDropShadowEffect()
+                    mini_shadow.setBlurRadius(8)
+                    mini_shadow.setColor(QColor(103, 80, 164, 40))
+                    mini_shadow.setOffset(0, 2)
+                    small_btn.setGraphicsEffect(mini_shadow)
+                except Exception:
+                    pass
+                self.preview_layout.addWidget(small_btn, row, col)
             except Exception:
-                pass
-
-            icon_loaded = False
-            try:
-                pixmap = QPixmap(app.icon_path)
-                if not pixmap.isNull():
-                    scaled_pixmap = pixmap.scaled(
-                        inner_icon_size, inner_icon_size,
-                        Qt.AspectRatioMode.KeepAspectRatio,
-                        Qt.TransformationMode.SmoothTransformation
-                    )
-                    mini_icon.setPixmap(scaled_pixmap)
-                    icon_loaded = True
-            except Exception:
-                pass
-
-            if not icon_loaded:
-                mini_icon.setText("\U0001f4f1")
-                placeholder_font_size = max(20, int(icon_size * 0.35))
-                mini_icon.setStyleSheet(mini_icon.styleSheet() + f"font-size: {placeholder_font_size}px;")
-
-            self.preview_layout.addWidget(mini_icon, row, col)
+                placeholder = QLabel()
+                placeholder.setFixedSize(icon_size, icon_size)
+                self.preview_layout.addWidget(placeholder, row, col)
 
     def set_grayed_out(self, grayed_out):
         """Update visual disabled state"""
