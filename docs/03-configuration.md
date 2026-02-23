@@ -219,29 +219,31 @@ ShellConfig.update_folder(2, display_name="SERVICE & SUPPORT")
 
 ### How It Works
 
-1. `LanguageSelectorWidget` (in the header) shows a dropdown of `Language` enum values.
+1. `LanguageSelectorWidget` (in the header) shows a dropdown built from a configurable list of `(code, display_name)` tuples.
 2. When the user selects a new language, the widget posts `QEvent.Type.LanguageChange` to **all top-level widgets** via `QApplication.postEvent()`.
 3. `AppShell.changeEvent()` detects `LanguageChange` and calls `retranslate()`.
 4. `retranslate()` iterates folder widgets and calls `update_title_label()` on each.
 5. Each `FolderWidget` calls its `translate_fn(folder_name)` to get the localized title.
 
-### Language Enum
+### Configuring Languages
+
+Pass a `languages` list to `AppShell`. Each entry is a `(code, display_name)` tuple:
 
 ```python
-class Language(enum.Enum):
-    ENGLISH = "English"
-    BULGARIAN = "Bulgarian"
-
-    @property
-    def display_name(self):
-        return self.value
+shell = AppShell(
+    app_descriptors=descriptors,
+    widget_factory=factory,
+    languages=[("en", "English"), ("de", "German"), ("fr", "French")]
+)
 ```
+
+When omitted (`None`), the language selector is **hidden** and no dropdown is shown in the header. The `languages` list is forwarded through `Header` to `LanguageSelectorWidget`.
 
 ### LanguageSelectorWidget Signals
 
 | Signal            | Type              | Description                            |
 |-------------------|-------------------|----------------------------------------|
-| `languageChanged` | `pyqtSignal(Language)` | Emitted when user selects a language |
+| `languageChanged` | `pyqtSignal(str)` | Emits the language **code** (e.g. `"en"`) when user selects a language |
 
 ### Connecting to Language Changes
 

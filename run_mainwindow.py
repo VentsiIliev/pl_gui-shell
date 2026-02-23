@@ -70,7 +70,9 @@ def main():
     # Step 3: Create MainWindow with pure data - NO plugin knowledge!
     window = AppShell(
         app_descriptors=app_descriptors,
-        widget_factory=widget_factory
+        widget_factory=widget_factory,
+        languages=[("en", "English"), ("de", "German"), ("fr", "French")] # If no language is provided, it will not show the language switcher in the UI
+
     )
 
     window.resize(1280, 1024)

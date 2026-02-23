@@ -19,13 +19,16 @@ class AppShell(QWidget):
         self,
         app_descriptors: List[AppDescriptor],
         widget_factory: Callable[[str], QWidget],
-        ui_factory=None
+        ui_factory=None,
+        languages: list = None
     ):
         """
         Args:
             app_descriptors: List of apps to display in folders
             widget_factory: Callable that creates widgets given an app name
             ui_factory: Optional UIFactory for swappable UI components (defaults to MaterialUIFactory)
+            languages: Optional list of (code, display_name) tuples for language selector.
+                       Defaults to [("en", "English"), ("bg", "Bulgarian")].
         """
         super().__init__()
 
@@ -35,6 +38,7 @@ class AppShell(QWidget):
 
         from src.shell.ui.material import MaterialUIFactory
         self._ui_factory = ui_factory or MaterialUIFactory()
+        self._languages = languages
 
         # Internal state
         self.current_running_app = None  # Track currently running app
@@ -187,7 +191,8 @@ class AppShell(QWidget):
         self.header = Header(screen_width,
                              screen_height,
                              toggle_menu_callback=None,
-                             dashboard_button_callback=None)
+                             dashboard_button_callback=None,
+                             languages=self._languages)
         self.header.menu_button.setVisible(False)
         self.header.dashboardButton.setVisible(False)
         self.header.power_toggle_button.setVisible(False)

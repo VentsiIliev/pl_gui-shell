@@ -54,24 +54,19 @@ def __init__(self, app_name: str, parent=None)
 
 ## `src.components.LanguageSelectorWidget`
 
-### `Language(enum.Enum)`
-
-| Member | Value |
-|--------|-------|
-| `ENGLISH` | `"English"` |
-| `BULGARIAN` | `"Bulgarian"` |
-
-Property: `display_name -> str` (returns `self.value`).
-
 ### `LanguageSelectorWidget(QComboBox)`
 
 ```python
-def __init__(self, parent=None)
+def __init__(self, languages: Optional[List[Tuple[str, str]]] = None, parent=None)
 ```
+
+| Parameter | Type | Default |
+|-----------|------|---------|
+| `languages` | `list[tuple[str, str]]` or `None` | `None` — selector hidden; pass a list to show it |
 
 | Signal | Type |
 |--------|------|
-| `languageChanged` | `pyqtSignal(Language)` |
+| `languageChanged` | `pyqtSignal(str)` — emits language code (e.g. `"en"`) |
 
 | Method | Signature | Description |
 |--------|-----------|-------------|
@@ -89,7 +84,8 @@ def __init__(
     screen_width: int,
     screen_height: int,
     toggle_menu_callback: Optional[Callable[[], None]],
-    dashboard_button_callback: Optional[Callable[[], None]]
+    dashboard_button_callback: Optional[Callable[[], None]],
+    languages: Optional[list] = None
 )
 ```
 
@@ -190,7 +186,8 @@ def __init__(
     self,
     app_descriptors: List[AppDescriptor],
     widget_factory: Callable[[str], QWidget],
-    ui_factory=None   # Optional[UIFactory], defaults to MaterialUIFactory
+    ui_factory=None,   # Optional[UIFactory], defaults to MaterialUIFactory
+    languages: list = None  # Optional list of (code, display_name) tuples; None hides the selector
 )
 ```
 

@@ -397,8 +397,13 @@ Top toolbar bar. Extends `QFrame`.
 ```python
 Header(screen_width: int, screen_height: int,
        toggle_menu_callback: Optional[Callable],
-       dashboard_button_callback: Optional[Callable])
+       dashboard_button_callback: Optional[Callable],
+       languages: Optional[list] = None)
 ```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `languages` | `list[tuple[str, str]]` or `None` | Language `(code, display_name)` tuples passed to `LanguageSelectorWidget`. When `None` (default), the language selector is hidden. |
 
 ### Signals
 
@@ -434,17 +439,27 @@ Height: responsive between `screen_height * 0.08` and `100px`.
 
 Language dropdown. Extends `QComboBox`.
 
+### Constructor
+
+```python
+LanguageSelectorWidget(languages: Optional[list[tuple[str, str]]] = None, parent=None)
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `languages` | `list[tuple[str, str]]` or `None` | List of `(code, display_name)` tuples. Defaults to `[("en", "English"), ("bg", "Bulgarian")]` internally, but the widget is hidden when `Header` receives `None`. |
+
 ### Signals
 
 | Signal | Type | Description |
 |--------|------|-------------|
-| `languageChanged` | `pyqtSignal(Language)` | Emitted on selection change |
+| `languageChanged` | `pyqtSignal(str)` | Emits the language code string (e.g. `"en"`) on selection change |
 
 ### Behavior
 
 On selection change:
-1. Updates `current_language` attribute.
-2. Emits `languageChanged` signal.
+1. Updates `current_language` attribute (language code string).
+2. Emits `languageChanged` signal with the code string.
 3. Posts `QEvent.Type.LanguageChange` to all top-level widgets via `QApplication.postEvent()`.
 
 ---

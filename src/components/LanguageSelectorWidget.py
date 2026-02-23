@@ -1,17 +1,9 @@
-import enum
+from typing import List, Optional, Tuple
 
 from PyQt6.QtWidgets import QComboBox, QApplication
 from PyQt6.QtCore import pyqtSignal, QEvent
 
-
-# crea Language Mock
-class Language(enum.Enum):
-    ENGLISH = "English"
-    BULGARIAN = "Bulgarian"
-
-    @property
-    def display_name(self):
-        return self.value
+_DEFAULT_LANGUAGES: List[Tuple[str, str]] = [("en", "English"), ("bg", "Bulgarian")]
 
 
 class LanguageSelectorWidget(QComboBox):
@@ -19,22 +11,23 @@ class LanguageSelectorWidget(QComboBox):
     Language selector that emits Qt LanguageChange events.
 
     When language changes:
-    1. Emits custom languageChanged signal (for backward compatibility)
+    1. Emits custom languageChanged signal (emits the language code string)
     2. Posts QEvent.LanguageChange to all top-level widgets
     3. Widgets handle it in changeEvent() and call retranslateUi()
     """
-    languageChanged = pyqtSignal(Language)
+    languageChanged = pyqtSignal(str)
 
-    def __init__(self, parent=None):
+    def __init__(self, languages: Optional[List[Tuple[str, str]]] = None, parent=None):
         super().__init__(parent)
 
-        self.current_language = Language.ENGLISH
+        self.languages = languages if languages is not None else list(_DEFAULT_LANGUAGES)
+        self._display_to_code = {display: code for code, display in self.languages}
 
-        self.languages = list(Language)
-        self.language_name_to_enum = {lang.display_name: lang for lang in self.languages}
+        # Current language code (first entry is the default)
+        self.current_language: str = self.languages[0][0]
 
-        # Populate dropdown
-        self.addItems([lang.display_name for lang in self.languages])
+        # Populate dropdown with display names
+        self.addItems([display for _code, display in self.languages])
 
         # Set current language
         self.updateSelectedLang()
@@ -44,13 +37,13 @@ class LanguageSelectorWidget(QComboBox):
     def _on_language_change(self, index):
         """Handle language change and emit Qt LanguageChange events"""
         selected_text = self.currentText()
-        selected_enum = self.language_name_to_enum[selected_text]
+        code = self._display_to_code[selected_text]
 
         # Update current language
-        self.current_language = selected_enum
+        self.current_language = code
 
-        # Emit custom signal for backward compatibility
-        self.languageChanged.emit(selected_enum)
+        # Emit language code string
+        self.languageChanged.emit(code)
 
         # Post LanguageChange event to all top-level widgets (Qt standard way)
         self._post_language_change_events()
@@ -59,7 +52,6 @@ class LanguageSelectorWidget(QComboBox):
         """Post LanguageChange event to all top-level widgets in the application"""
         app = QApplication.instance()
         if app and isinstance(app, QApplication):
-            # Send to all top-level widgets
             for widget in app.topLevelWidgets():
                 event = QEvent(QEvent.Type.LanguageChange)
                 app.postEvent(widget, event)
@@ -67,6 +59,10 @@ class LanguageSelectorWidget(QComboBox):
 
     def updateSelectedLang(self):
         """Update the selected language in the dropdown"""
-        self.setCurrentIndex(self.findText(self.current_language.display_name))
+        # Find display name for current language code
+        for code, display in self.languages:
+            if code == self.current_language:
+                self.setCurrentIndex(self.findText(display))
+                return
 
 

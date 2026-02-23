@@ -33,6 +33,7 @@ class Header(QFrame):
         screen_height: int,
         toggle_menu_callback: Optional[Callable[[], None]],
         dashboard_button_callback: Optional[Callable[[], None]],
+        languages: Optional[list] = None,
     ) -> None:
         super().__init__()
 
@@ -66,13 +67,13 @@ class Header(QFrame):
         # Left stretch
         self.header_layout.addStretch()
 
-        # Language Selector (centered)
-        self.language_selector: LanguageSelectorWidget = LanguageSelectorWidget()
+        # Language Selector (centered) — hidden when no languages are configured
+        self.language_selector: LanguageSelectorWidget = LanguageSelectorWidget(languages=languages)
         self.language_selector.setObjectName("language_selector_combo")
         self.language_selector.languageChanged.connect(self.handle_language_change)
         self.language_selector.setFixedWidth(200)
-
-
+        if languages is None:
+            self.language_selector.setVisible(False)
 
         self.header_layout.addWidget(self.language_selector)
 
