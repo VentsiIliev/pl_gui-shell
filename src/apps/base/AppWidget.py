@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel, QSizePoli
 
 
 class AppWidget(QWidget):
-    """Base widget for individual applications"""
+    """Base widget for individual applications. Satisfies IAppWidget protocol."""
 
     app_closed = pyqtSignal()  # Signal emitted when app wants to close
 

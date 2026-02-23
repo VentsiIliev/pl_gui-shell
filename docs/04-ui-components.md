@@ -466,7 +466,7 @@ On selection change:
 
 ## AppWidget (`src/apps/base/AppWidget.py`)
 
-Base class for application content. Extends `QWidget`.
+Base class for application content. Extends `QWidget`. Implements `IAppWidget` protocol.
 
 ### Constructor
 
@@ -485,6 +485,7 @@ AppWidget(app_name: str, parent=None)
 | Method | Description |
 |--------|-------------|
 | `close_app()` | Emit `app_closed` signal |
+| `on_language_changed()` | Called on `LanguageChange` event. Override in subclasses for translation logic. Base implementation prints. |
 | `clean_up()` | Override for resource cleanup (no-op by default) |
 
 ---

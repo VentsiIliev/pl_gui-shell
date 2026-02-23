@@ -161,10 +161,11 @@ FOLDER_ADMINISTRATION = 3
 
 ## `src.shell.interfaces`
 
-Nine `@runtime_checkable` protocols. See [Architecture — Protocols](./02-architecture.md#protocols-srcshellinterfacespy) for full signatures.
+Ten `@runtime_checkable` protocols. See [Architecture — Protocols](./02-architecture.md#protocols-srcshellinterfacespy) for full signatures.
 
 | Protocol | Key Methods |
 |----------|-------------|
+| `IAppWidget` | Attributes: `app_name`; Methods: `close_app()`, `on_language_changed()`, `clean_up()` |
 | `IMenuIcon` | Attributes: `icon_label`, `icon_path`, `icon_text`, `callback` |
 | `IFolderWidget` | `add_app()`, `set_grayed_out()`, `update_title_label()`, `update_folder_preview()` |
 | `IExpandedView` | `add_app_icon()`, `fade_in()`, `fade_out()`, `show_close_app_button()`, `hide_close_app_button()` |
