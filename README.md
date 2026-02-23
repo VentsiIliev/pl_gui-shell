@@ -29,7 +29,7 @@ This project implements a **clean separation** between the GUI shell and the app
 - **Shell Layer** (`src/shell/`) - Pure Qt launcher with folder-based UI
 - **Base App** (`src/shell/base_app_widget/`) - Base application widget
 - **Core** (`src/shell/app_descriptor.py`, `src/shell/app_registry.py`) - Integration abstractions
-- **Components** (`src/components/`) - Shared UI components
+- **UI Components** (`src/shell/ui/`) - Header, LanguageSelector, icons, styles
 - **Factory Layer** (`src/factory/`) - Mock plugin system
 
 ## 📁 Project Structure

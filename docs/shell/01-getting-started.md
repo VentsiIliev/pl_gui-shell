@@ -31,9 +31,6 @@ pl_gui-shell/
 ├── run_mainwindow.py              # Default demo (3 folders, 6 apps)
 ├── run_custom_folders.py          # Custom folders demo (5 folders, 15 apps)
 ├── src/
-│   ├── components/
-│   │   ├── Header.py              # Top toolbar with power, language, FPS
-│   │   └── LanguageSelectorWidget.py  # Language dropdown + i18n events
 │   └── shell/
 │       ├── app_descriptor.py      # AppDescriptor dataclass
 │       ├── app_registry.py        # Plugin integration helper
@@ -45,6 +42,8 @@ pl_gui-shell/
 │       ├── interfaces.py          # 10 Protocol interfaces + UIFactory
 │       ├── shell_config.py        # ShellConfig API + FolderDefinition
 │       └── ui/
+│           ├── Header.py              # Top toolbar with power, language, FPS
+│           ├── LanguageSelectorWidget.py  # Language dropdown + i18n events
 │           ├── icon_loader.py     # Unified icon loading with cache
 │           ├── styles.py          # Design tokens (colors, shadows, stylesheets)
 │           └── material/

@@ -388,7 +388,7 @@ Manages `FolderOverlay` instance.
 
 ---
 
-## Header (`src/components/Header.py`)
+## Header (`src/shell/ui/Header.py`)
 
 Top toolbar bar. Extends `QFrame`.
 
@@ -435,7 +435,7 @@ Height: responsive between `screen_height * 0.08` and `100px`.
 
 ---
 
-## LanguageSelectorWidget (`src/components/LanguageSelectorWidget.py`)
+## LanguageSelectorWidget (`src/shell/ui/LanguageSelectorWidget.py`)
 
 Language dropdown. Extends `QComboBox`.
 

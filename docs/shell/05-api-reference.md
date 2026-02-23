@@ -52,7 +52,7 @@ def __init__(self, app_name: str, parent=None)
 
 ---
 
-## `src.components.LanguageSelectorWidget`
+## `src.shell.ui.LanguageSelectorWidget`
 
 ### `LanguageSelectorWidget(QComboBox)`
 
@@ -74,7 +74,7 @@ def __init__(self, languages: Optional[List[Tuple[str, str]]] = None, parent=Non
 
 ---
 
-## `src.components.Header`
+## `src.shell.ui.Header`
 
 ### `Header(QFrame)`
 

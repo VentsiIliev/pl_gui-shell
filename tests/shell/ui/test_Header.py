@@ -1,4 +1,4 @@
-"""Tests for src.components.Header — Header icon loading with load_icon."""
+"""Tests for src.shell.ui.Header — Header icon loading with load_icon."""
 
 import pytest
 from unittest.mock import patch, MagicMock
@@ -16,12 +16,12 @@ class FakeLanguageSelector(QWidget):
         self.languageChanged.connect = MagicMock()
 
 
-@patch("src.components.Header.LanguageSelectorWidget", FakeLanguageSelector)
-@patch("src.components.Header.load_icon", return_value=QIcon())
+@patch("src.shell.ui.Header.LanguageSelectorWidget", FakeLanguageSelector)
+@patch("src.shell.ui.Header.load_icon", return_value=QIcon())
 class TestHeaderIconLoading:
     def test_header_dashboard_icon_uses_load_icon(self, mock_load_icon, qapp):
         """Dashboard button icon set via load_icon."""
-        from src.components.Header import Header
+        from src.shell.ui.Header import Header
         header = Header(800, 600, lambda: None, lambda: None)
 
         call_args_list = [str(c[0][0]) for c in mock_load_icon.call_args_list]
@@ -29,7 +29,7 @@ class TestHeaderIconLoading:
 
     def test_header_menu_icon_uses_load_icon(self, mock_load_icon, qapp):
         """Menu button icon set via load_icon."""
-        from src.components.Header import Header
+        from src.shell.ui.Header import Header
         header = Header(800, 600, lambda: None, lambda: None)
 
         call_args_list = [str(c[0][0]) for c in mock_load_icon.call_args_list]
@@ -37,7 +37,7 @@ class TestHeaderIconLoading:
 
     def test_header_power_toggle(self, mock_load_icon, qapp):
         """Toggle switches between ON/OFF icons."""
-        from src.components.Header import Header
+        from src.shell.ui.Header import Header
         header = Header(800, 600, lambda: None, lambda: None)
 
         assert header.power_on is False
@@ -58,7 +58,7 @@ class TestHeaderIconLoading:
 
     def test_header_user_account_icon(self, mock_load_icon, qapp):
         """User button uses qtawesome 'fa5s.user'."""
-        from src.components.Header import Header
+        from src.shell.ui.Header import Header
         header = Header(800, 600, lambda: None, lambda: None)
 
         call_args_list = [str(c[0][0]) for c in mock_load_icon.call_args_list]
