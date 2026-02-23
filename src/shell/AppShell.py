@@ -3,7 +3,7 @@ from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtWidgets import (QStackedWidget, QFrame, QWidget)
 from PyQt6.QtWidgets import (QVBoxLayout, QApplication)
 
-from src.core.app_descriptor import AppDescriptor
+from src.shell.app_descriptor import AppDescriptor
 from src.components.Header import Header
 from src.shell.FolderLauncher import FolderLauncher, FolderConfig
 from src.shell.shell_config import ShellConfig

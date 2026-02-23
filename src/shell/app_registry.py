@@ -1,7 +1,7 @@
 from typing import Callable, Tuple, List
 from PyQt6.QtWidgets import QWidget
 from .app_descriptor import AppDescriptor
-from src.apps.base.AppWidget import AppWidget
+from src.shell.base_app_widget.AppWidget import AppWidget
 
 
 def build_app_registry(plugin_manager, widget_factory_instance) -> Tuple[List[AppDescriptor], Callable[[str], QWidget]]:

@@ -168,7 +168,7 @@ Use these when assigning `folder_id` on `AppDescriptor` for clarity.
 
 ## AppDescriptor
 
-Defined in `src/core/app_descriptor.py`:
+Defined in `src/shell/app_descriptor.py`:
 
 ```python
 @dataclass

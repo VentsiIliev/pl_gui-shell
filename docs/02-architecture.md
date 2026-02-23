@@ -43,7 +43,7 @@ The shell never imports or references any plugin system, business logic, or appl
 
 ## Protocols (`src/shell/interfaces.py`)
 
-The project defines 9 protocols using `typing.Protocol` with `@runtime_checkable`:
+The project defines 10 protocols using `typing.Protocol` with `@runtime_checkable`:
 
 ### UI Component Protocols
 
@@ -214,10 +214,10 @@ AppShell.close_current_app() → close_all_apps()
 
 ## Plugin Integration Seam
 
-For projects with a plugin system, `build_app_registry()` in `src/core/app_registry.py` bridges the gap:
+For projects with a plugin system, `build_app_registry()` in `src/shell/app_registry.py` bridges the gap:
 
 ```python
-from src.core.app_registry import build_app_registry
+from src.shell.app_registry import build_app_registry
 
 # plugin_manager: has get_loaded_plugin_names() and get_plugin(name)
 # widget_factory_instance: has create_widget(app_name)

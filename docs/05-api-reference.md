@@ -4,7 +4,7 @@ Organized by module path. Each class lists its constructor signature, signals, a
 
 ---
 
-## `src.core.app_descriptor`
+## `src.shell.app_descriptor`
 
 ### `AppDescriptor`
 
@@ -18,7 +18,7 @@ class AppDescriptor:
 
 ---
 
-## `src.core.app_registry`
+## `src.shell.app_registry`
 
 ### `build_app_registry(plugin_manager, widget_factory_instance)`
 
@@ -33,7 +33,7 @@ Returns `(descriptors, factory)`. Reads `_json_metadata` dict from each plugin f
 
 ---
 
-## `src.apps.base.AppWidget`
+## `src.shell.base_app_widget.AppWidget`
 
 ### `AppWidget(QWidget)`
 

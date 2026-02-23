@@ -464,7 +464,7 @@ On selection change:
 
 ---
 
-## AppWidget (`src/apps/base/AppWidget.py`)
+## AppWidget (`src/shell/base_app_widget/AppWidget.py`)
 
 Base class for application content. Extends `QWidget`. Implements `IAppWidget` protocol.
 

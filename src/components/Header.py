@@ -15,7 +15,7 @@ from .LanguageSelectorWidget import LanguageSelectorWidget
 # from modules.shared.MessageBroker import MessageBroker
 
 # Resource paths
-RESOURCE_DIR: str = os.path.join(os.path.dirname(os.path.abspath(__file__)), "resources")
+RESOURCE_DIR: str = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "shell", "resources")
 MENU_ICON_PATH: str = os.path.join(RESOURCE_DIR, "pl_ui_icons", "SANDWICH_MENU.png")
 LOGO_ICON_PATH: str = os.path.join(RESOURCE_DIR, "pl_ui_icons", "logo.ico")
 ON_ICON_PATH: str = os.path.join(RESOURCE_DIR, "pl_ui_icons", "POWER_ON_BUTTON.png")

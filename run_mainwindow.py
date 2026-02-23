@@ -4,8 +4,8 @@ from typing import List
 from PyQt6.QtWidgets import QApplication, QWidget
 
 from src.shell.AppShell import AppShell
-from src.core.app_descriptor import AppDescriptor
-from src.apps.base.AppWidget import AppWidget
+from src.shell.app_descriptor import AppDescriptor
+from src.shell.base_app_widget.AppWidget import AppWidget
 
 def create_simple_factory():
     """Simple factory that always returns placeholder AppWidgets - no plugins!"""

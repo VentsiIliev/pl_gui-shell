@@ -7,9 +7,9 @@ import sys
 from PyQt6.QtWidgets import QApplication
 
 from src.shell.AppShell import AppShell
-from src.core.app_descriptor import AppDescriptor
+from src.shell.app_descriptor import AppDescriptor
 from src.shell.shell_config import ShellConfig, create_custom_folder
-from src.apps.base.AppWidget import AppWidget
+from src.shell.base_app_widget.AppWidget import AppWidget
 
 
 def create_simple_factory():

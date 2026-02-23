@@ -31,20 +31,18 @@ pl_gui-shell/
 ├── run_mainwindow.py              # Default demo (3 folders, 6 apps)
 ├── run_custom_folders.py          # Custom folders demo (5 folders, 15 apps)
 ├── src/
-│   ├── apps/
-│   │   └── base/
-│   │       └── AppWidget.py       # Base application widget
 │   ├── components/
 │   │   ├── Header.py              # Top toolbar with power, language, FPS
 │   │   └── LanguageSelectorWidget.py  # Language dropdown + i18n events
-│   ├── core/
-│   │   ├── app_descriptor.py      # AppDescriptor dataclass
-│   │   └── app_registry.py        # Plugin integration helper
 │   └── shell/
+│       ├── app_descriptor.py      # AppDescriptor dataclass
+│       ├── app_registry.py        # Plugin integration helper
+│       ├── base_app_widget/
+│       │   └── AppWidget.py       # Base application widget
 │       ├── AppShell.py            # Main window (QWidget)
 │       ├── FolderLauncher.py      # Folder grid page + FolderConfig
 │       ├── folder_controller.py   # Business logic per folder
-│       ├── interfaces.py          # 9 Protocol interfaces + UIFactory
+│       ├── interfaces.py          # 10 Protocol interfaces + UIFactory
 │       ├── shell_config.py        # ShellConfig API + FolderDefinition
 │       └── ui/
 │           ├── icon_loader.py     # Unified icon loading with cache
@@ -99,8 +97,8 @@ Create a file `hello_shell.py` at the project root:
 import sys
 from PyQt6.QtWidgets import QApplication
 from src.shell.AppShell import AppShell
-from src.core.app_descriptor import AppDescriptor
-from src.apps.base.AppWidget import AppWidget
+from src.shell.app_descriptor import AppDescriptor
+from src.shell.base_app_widget.AppWidget import AppWidget
 
 
 def main():
